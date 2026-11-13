@@ -3,7 +3,7 @@
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "echo 'Shared plugin hook ran.'" }
+          { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/hello.sh" }
         ]
       }
     ]

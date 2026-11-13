@@ -12,7 +12,9 @@ claude-shared/
 ├── plugins/shared/                   ← the plugin
 │   ├── .claude-plugin/plugin.json    ← name + version
 │   ├── skills/hello/SKILL.md         ← a skill: /shared:hello
-│   ├── hooks/hooks.json              ← a UserPromptSubmit hook
+│   ├── agents/hello.md               ← an agent: shared:hello
+│   ├── hooks/hooks.json              ← a UserPromptSubmit hook…
+│   ├── hooks/hello.sh                ← …that runs this script
 │   ├── .mcp.json                     ← an MCP server entry
 │   └── mcp/hello.mjs                 ← the MCP server, no dependencies
 └── templates/settings.json           ← copied into new projects, never loaded
@@ -52,7 +54,7 @@ A project without the install never sees the plugin.
 
 ## Editing
 
-Because the marketplace is a local folder, the plugin loads in place. Edit a file, then start a new session or run `/reload-plugins`. No version bump. MCP server changes need a new session.
+Because the marketplace is a local folder, the plugin loads in place. Edit a file, then start a new session or run `/reload-plugins`. No version bump. MCP server changes need a new session. Hook scripts are read each time they run, so they need neither.
 
 ## Reusing it elsewhere
 
@@ -67,4 +69,5 @@ Plugin content is prefixed with the plugin's name:
 | Piece | Name in a session |
 | --- | --- |
 | Skill | `/shared:hello` |
+| Agent | `shared:hello` |
 | MCP tool | `mcp__plugin_shared_hello__greet` |
