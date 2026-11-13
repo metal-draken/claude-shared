@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "echo 'Shared plugin hook ran.'" }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "customer-x",
+  "owner": { "name": "your-name" },
+  "plugins": [
+    { "name": "shared", "source": "./plugins/shared" }
+  ]
+}

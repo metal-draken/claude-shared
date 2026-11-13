@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "hello": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/hello.mjs"]
+    }
+  }
+}
