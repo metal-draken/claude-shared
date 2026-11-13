@@ -52,6 +52,88 @@ Then run `/shared:hello`. It replies with "Hello from the shared plugin."
 
 A project without the install never sees the plugin.
 
+## Try it end to end
+
+These steps build the layout from the post in a scratch folder: two customers with one project each, and the plugin installed for customer X only. They also add a `CLAUDE.md` and a skill to the parent folder, to show what reaches the projects inside it.
+
+1. Create the two customer folders, each holding one git repo, and clone this repo next to customer X's project:
+
+   ```bash
+   mkdir -p ~/claude-demo/customer-x/project-a ~/claude-demo/customer-y/project-b
+   ```
+
+   ```bash
+   git -C ~/claude-demo/customer-x/project-a init
+   ```
+
+   ```bash
+   git -C ~/claude-demo/customer-y/project-b init
+   ```
+
+   ```bash
+   git clone https://github.com/metal-draken/claude-shared.git ~/claude-demo/customer-x/claude-shared
+   ```
+
+2. Give the parent folder a `CLAUDE.md` and a skill of its own:
+
+   ```bash
+   echo "The customer X marker word is ORANGE-17." > ~/claude-demo/customer-x/CLAUDE.md
+   ```
+
+   ```bash
+   mkdir -p ~/claude-demo/customer-x/.claude/skills/parent-skill
+   ```
+
+   ```bash
+   printf -- '---\nname: parent-skill\ndescription: Replies with a fixed greeting from the parent folder.\n---\n\nReply with exactly: "Hello from the parent folder."\n' > ~/claude-demo/customer-x/.claude/skills/parent-skill/SKILL.md
+   ```
+
+   The result:
+
+   ```
+   claude-demo/
+   ├── customer-x/
+   │   ├── CLAUDE.md                ← reaches project-a
+   │   ├── .claude/skills/          ← doesn't reach project-a
+   │   ├── claude-shared/           ← this repo, the marketplace
+   │   └── project-a/               ← git repo, plugin installed
+   └── customer-y/
+       └── project-b/               ← git repo, no plugin
+   ```
+
+3. Register the marketplace, then install the plugin in project A only:
+
+   ```bash
+   claude plugin marketplace add ~/claude-demo/customer-x/claude-shared
+   ```
+
+   ```bash
+   cd ~/claude-demo/customer-x/project-a && claude plugin install shared@customer-x --scope local
+   ```
+
+4. Start `claude` in each project and compare:
+
+   | Try | In `project-a` | In `project-b` |
+   | --- | --- | --- |
+   | `/shared:hello` | "Hello from the shared plugin." | Unknown skill |
+   | "Use the shared:hello agent" | "Hello from the shared agent." | No such agent |
+   | "What is the customer X marker word?" | ORANGE-17, from the parent `CLAUDE.md` | Doesn't know |
+   | `/parent-skill` | Unknown skill: the search stops at the git root | Unknown skill |
+
+5. Clean up. Uninstall the plugin, remove the marketplace from your Claude Code settings, and delete the folder:
+
+   ```bash
+   cd ~/claude-demo/customer-x/project-a && claude plugin uninstall shared@customer-x --scope local
+   ```
+
+   ```bash
+   claude plugin marketplace remove customer-x
+   ```
+
+   ```bash
+   cd ~ && rm -rf ~/claude-demo
+   ```
+
 ## Editing
 
 Because the marketplace is a local folder, the plugin loads in place. Edit a file, then start a new session or run `/reload-plugins`. No version bump. MCP server changes need a new session. Hook scripts are read each time they run, so they need neither.
